@@ -143,12 +143,19 @@ def copy_l10n_packs(src, dest):
 # Main installation process
 if __name__ == "__main__":
     # Step 1: Clone the main repository
-    clone_repo("https://github.com/neurokitti/desktop", desktop_folder)
+    default_desktop_repo = "https://github.com/neurokitti/desktop"
+    foreked_repo = input(f"Paste a link to your fork of the desktop repo (press Enter to use default: {default_desktop_repo}): ").strip()
+    desktop_repo = foreked_repo if foreked_repo else default_desktop_repo
+    clone_repo(desktop_repo, desktop_folder)
+
 
     # Step 2: Navigate to the l10n folder and clone l10n-packs repository
+    default_l10n_repo = "https://github.com/neurokitti/l10n-packs"
+    foreked_repo = input(f"Paste a link to your fork of the l10n-packs repo (press Enter to use default: {default_desktop_repo}): ").strip()
+    l10n_repo = foreked_repo if foreked_repo else default_l10n_repo
     l10n_folder = os.path.join(desktop_folder, "l10n")
     l10n_packs_folder = os.path.join(parent_folder, "l10n-packs")  # Temporary location
-    clone_repo("https://github.com/neurokitti/l10n-packs", l10n_packs_folder)
+    clone_repo(l10n_repo, l10n_packs_folder)
 
     # Step 3: Copy contents from l10n-packs to l10n folder
     copy_l10n_packs(l10n_packs_folder, l10n_folder)
