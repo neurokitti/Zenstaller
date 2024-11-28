@@ -49,30 +49,97 @@ def clone_repo(repo_url, clone_to_path):
 def copy_files(src, dest):
     try:
         print(f"Copying files from {src} to {dest}...")
-        shutil.copytree(src, dest, dirs_exist_ok=True)  # Copy files and directories
+        # Check if source folder exists before copying
+        if not os.path.exists(src):
+            print(f"Error: Source folder does not exist: {src}")
+            exit(1)
+
+        
+
+        # If the destination already has the l10n-packs folder, remove it
+        if os.path.exists(dest):
+            print(f"Destination folder exists, removing: {dest}")
+            shutil.rmtree(dest)
+
+        # Copy all files and subdirectories, but not the root folder itself
+        for item in os.listdir(src):
+            s = os.path.join(src, item)
+            d = os.path.join(dest, item)
+            if os.path.isdir(s):
+                shutil.copytree(s, d, dirs_exist_ok=True)  # Copy subdirectories
+            else:
+                shutil.copy2(s, d)  # Copy files
+
         print(f"Files and folders copied successfully from {src} to {dest}")
     except Exception as e:
         print(f"Error: Failed to copy files and folders from {src} to {dest}. {e}")
         exit(1)
 
+
+# Function to run npm commands
 # Function to run npm commands
 def run_npm_commands():
     try:
+        os.chdir(desktop_folder)
+        print("Current Directory:", os.getcwd())
+
         print("Running npm install...")
-        subprocess.check_call(["npm", "i"])
+        subprocess.run(["npm", "install"], shell=True, check=True)
         print("npm install completed.")
 
+        os.chdir(desktop_folder)
+        print("Current Directory:", os.getcwd())
         print("Running npm run init...")
-        subprocess.check_call(["npm", "run", "init"])
+        subprocess.run(["npm", "run", "init"], shell=True, check=True)
         print("npm run init completed.")
 
+        os.chdir(desktop_folder)
+        print("Current Directory:", os.getcwd())
         print("Running npm run bootstrap...")
-        subprocess.check_call(["npm", "run", "bootstrap"])
+        subprocess.run(["npm", "run", "bootstrap"], shell=True, check=True)
         print("npm run bootstrap completed.")
+
+        os.chdir(desktop_folder)
+        print("Current Directory:", os.getcwd())
+        print("Running npm run bootstrap...")
+        subprocess.run(["npm", "run", "build"], shell=True, check=True)
+        print("npm run bootstrap completed.")
+
     except subprocess.CalledProcessError as e:
         print(f"Error: npm command failed. {e}")
         exit(1)
 
+# Function to copy l10n-packs contents to l10n folder
+def copy_l10n_packs(src, dest):
+    try:
+        print(f"Copying l10n-packs contents from {src} to {dest}...")
+        
+        # Check if source folder exists
+        if not os.path.exists(src):
+            print(f"Error: Source folder does not exist: {src}")
+            exit(1)
+        
+        # Ensure destination folder exists
+        os.makedirs(dest, exist_ok=True)
+
+        # Copy all files and subdirectories from src to dest
+        for item in os.listdir(src):
+            s = os.path.join(src, item)
+            d = os.path.join(dest, item)
+            
+            if os.path.isdir(s):
+                # If it's a directory, copy entire directory
+                shutil.copytree(s, d, dirs_exist_ok=True)
+            else:
+                # If it's a file, copy the file
+                shutil.copy2(s, d)
+
+        print(f"Successfully copied l10n-packs contents to {dest}")
+    
+    except Exception as e:
+        print(f"Error: Failed to copy l10n-packs contents. {e}")
+        exit(1)
+        
 # Main installation process
 if __name__ == "__main__":
     # Step 1: Clone the main repository
@@ -80,11 +147,16 @@ if __name__ == "__main__":
 
     # Step 2: Navigate to the l10n folder and clone l10n-packs repository
     l10n_folder = os.path.join(desktop_folder, "l10n")
-    clone_repo("https://github.com/neurokitti/l10n-packs", l10n_folder)
+    l10n_packs_folder = os.path.join(parent_folder, "l10n-packs")  # Temporary location
+    clone_repo("https://github.com/neurokitti/l10n-packs", l10n_packs_folder)
 
-    # Step 3: Copy files and folders from l10n-packs into the l10n folder
-    l10n_packs_folder = os.path.join(desktop_folder, "l10n-packs")
-    copy_files(l10n_packs_folder, l10n_folder)
+    # Remove existing l10n-packs folder if it exists
+    if os.path.exists(l10n_packs_folder):
+        print(f"Removing existing l10n-packs folder: {l10n_packs_folder}")
+        shutil.rmtree(l10n_packs_folder)
+
+    # Step 3: Copy contents from l10n-packs to l10n folder
+    copy_l10n_packs(l10n_packs_folder, l10n_folder)
 
     # Step 4: Modify the mozconfig file
     modify_mozconfig(mozconfig_path, locales_path)
