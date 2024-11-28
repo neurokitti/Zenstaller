@@ -1,7 +1,6 @@
 import os
 import subprocess
 import shutil
-import git
 
 # Define the parent folder (the script will be run from the folder outside "desktop")
 parent_folder = os.getcwd()  # Get the current working directory (assumed to be the parent folder of "desktop")
@@ -36,13 +35,13 @@ def modify_mozconfig(file_path, new_locales_path):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-# Function to clone a repository
+# Function to clone a repository using git command
 def clone_repo(repo_url, clone_to_path):
     try:
         print(f"Cloning {repo_url} into {clone_to_path}...")
-        git.Repo.clone_from(repo_url, clone_to_path)
+        subprocess.check_call(["git", "clone", repo_url, clone_to_path])  # Use git command to clone
         print(f"Successfully cloned {repo_url}")
-    except Exception as e:
+    except subprocess.CalledProcessError as e:
         print(f"Error: Failed to clone {repo_url}. {e}")
         exit(1)
 
