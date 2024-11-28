@@ -150,14 +150,9 @@ if __name__ == "__main__":
     l10n_packs_folder = os.path.join(parent_folder, "l10n-packs")  # Temporary location
     clone_repo("https://github.com/neurokitti/l10n-packs", l10n_packs_folder)
 
-    # Remove existing l10n-packs folder if it exists
-    if os.path.exists(l10n_packs_folder):
-        print(f"Removing existing l10n-packs folder: {l10n_packs_folder}")
-        shutil.rmtree(l10n_packs_folder)
-
     # Step 3: Copy contents from l10n-packs to l10n folder
     copy_l10n_packs(l10n_packs_folder, l10n_folder)
-
+ 
     # Step 4: Modify the mozconfig file
     modify_mozconfig(mozconfig_path, locales_path)
 
