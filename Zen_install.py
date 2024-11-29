@@ -161,14 +161,16 @@ if __name__ == "__main__":
     copy_l10n_packs(l10n_packs_folder, l10n_folder)
  
 
-    l10n_US = os.path.join(desktop_folder, "l10n", "en-US","browser","browser")
-    l10n_local_folder = os.path.join(desktop_folder, "engine", "browser", "locales", "en-US", "browser")
-    copy_l10n_packs(l10n_US, l10n_local_folder)
     # Step 4: Modify the mozconfig file
     modify_mozconfig(mozconfig_path, locales_path)
 
     # Step 5: Run npm commands (install, init, bootstrap)
     run_npm_commands()
 
+
+    l10n_US = os.path.join(desktop_folder, "l10n", "en-US","browser","browser")
+    l10n_local_folder = os.path.join(desktop_folder, "engine", "browser", "locales", "en-US", "browser")
+    copy_l10n_packs(l10n_US, l10n_local_folder)
+    
     # Step 6: Final message
     print("Installation completed successfully.")
