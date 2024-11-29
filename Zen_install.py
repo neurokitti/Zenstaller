@@ -160,6 +160,10 @@ if __name__ == "__main__":
     # Step 3: Copy contents from l10n-packs to l10n folder
     copy_l10n_packs(l10n_packs_folder, l10n_folder)
  
+
+    l10n_US = os.path.join(desktop_folder, "l10n", "en-US","browser","browser")
+    l10n_local_folder = os.path.join(desktop_folder, "engine", "browser", "locales", "en-US", "browser")
+    copy_l10n_packs(l10n_US, l10n_local_folder)
     # Step 4: Modify the mozconfig file
     modify_mozconfig(mozconfig_path, locales_path)
 
